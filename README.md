@@ -2,6 +2,22 @@
 
 # jevgrep
 
+> **[dzhng/jevgrep](https://github.com/dzhng/jevgrep) 을 가져와 고친 판이다.** 달라진 것은 둘이다.
+>
+> - Jev 제공자에 **OpenGateway**(`https://apis.opengateway.ai/v1`)를 더했다. TypeSafe 와 같은 요청 형식을
+>   `/decisions` 에서 받는다: `jg auth --provider opengateway --stdin`.
+> - 저장된 인증이 없으면 `~/.config/opengateway.key` 를 읽어 `jg auth` 없이 바로 동작한다.
+>
+> npm 에는 올리지 않았다. 아래 원문의 `npm install`·`jg skill` 은 원본 패키지와 원본 스킬을 가리키니,
+> 이 판은 소스에서 설치한다(Node.js 22+, Bun 1.3.14 권장).
+>
+> ```sh
+> git clone https://github.com/2rami/jevgrep && cd jevgrep
+> bun install --frozen-lockfile && bun run build
+> cd apps/cli && npm pack && npm install --global ./dzhng-jevgrep-*.tgz
+> jg doctor
+> ```
+
 [![npm](https://img.shields.io/npm/v/@dzhng/jevgrep?style=flat-square&color=ef5638)](https://www.npmjs.com/package/@dzhng/jevgrep)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square)](apps/cli/README.md)
