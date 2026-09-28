@@ -36,6 +36,38 @@ test("Jev uses native state and validated boolean probabilities through real HTT
   }
 });
 
+test("OpenGateway sends the same protocol to /decisions", async () => {
+  const server = Bun.serve({
+    port: 0,
+    async fetch(request) {
+      expect(request.headers.get("x-jevgrep-original-url")).toBe(
+        "https://apis.opengateway.ai/v1/decisions",
+      );
+      expect(await request.json()).toEqual({
+        model: "typesafe/jev-1.13",
+        state: { source: "recordEvent()" },
+        questions: { useful: { type: "noul", instructions: "Is the source useful?" } },
+      });
+      return Response.json({ answers: { useful: { type: "noul", noul: 0.7 } } });
+    },
+  });
+  try {
+    const evaluator = createEvaluator({
+      apiKey: "fixture",
+      provider: "opengateway",
+      fetch: routeProviderFetch(fetch, `http://127.0.0.1:${server.port}`),
+      signal: new AbortController().signal,
+    });
+    const result = await evaluator.evaluate({
+      state: { source: "recordEvent()" },
+      questions: { useful: { type: "boolean", instructions: "Is the source useful?" } },
+    });
+    expect(result).toEqual({ useful: 0.7 });
+  } finally {
+    server.stop(true);
+  }
+});
+
 test("transient failures retry within the shared request guard and never become scores", async () => {
   let calls = 0;
   const server = Bun.serve({

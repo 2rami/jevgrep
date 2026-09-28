@@ -4,6 +4,7 @@ const endpoints = new Set([
   "https://api.typesafe.ai/v1/systemone",
   "https://openrouter.ai/api/v1/systemone",
   "https://opencode.ai/zen/v1/systemone",
+  "https://apis.opengateway.ai/v1/decisions",
 ]);
 export function routeProviderFetch(originalFetch, origin) {
   return async (input, init) => {

@@ -135,6 +135,7 @@ Auth automation:
   auth --provider ${Object.keys(providers).join("|")} --stdin
   Save one provider/key from a pipe. Re-running auth replaces your setup.
   Saved credentials only; provider key/URL environment variables are ignored.
+  Without saved credentials, ~/.config/opengateway.key is used through OpenGateway.
 
 Skill installation options:
   --agent NAME    Target an agent (repeat for multiple agents)

@@ -1,6 +1,6 @@
 import { chmod, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { isCancel, password, select } from "@clack/prompts";
 import { providers, isProviderId, type ProviderId } from "@repo/core/providers";
@@ -94,9 +94,20 @@ export async function loadCredentials(): Promise<Credentials> {
     if (!isProviderId(provider)) throw new CliError("Invalid provider. Run jg auth again.");
     return { provider, apiKey: validateKey(credentials.apiKey) };
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new CliError("Run jg auth or use jg auth --provider NAME --stdin.");
-    }
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return openGatewayFallback();
     throw new CliError("Could not read valid credentials. Run jg auth again.");
   }
+}
+
+// The shared OpenGateway key that kasa-jev and nacho already use, so a fresh install needs no auth.
+async function openGatewayFallback(): Promise<Credentials> {
+  let raw: string;
+  try {
+    raw = await readFile(join(dirname(configDirectory()), "opengateway.key"), "utf8");
+  } catch {
+    throw new CliError(
+      "Run jg auth, use jg auth --provider NAME --stdin, or save an OpenGateway key to ~/.config/opengateway.key.",
+    );
+  }
+  return { provider: "opengateway", apiKey: validateKey(raw) };
 }

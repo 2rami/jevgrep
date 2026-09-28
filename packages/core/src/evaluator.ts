@@ -79,7 +79,11 @@ export function createEvaluator(options: {
       if (requests >= (options.requestLimit ?? 50_000))
         throw new EvaluationFailure("request-limit");
       requests++;
-      const response = await (options.fetch ?? fetch)(input, init);
+      const target =
+        "evaluationPath" in preset && !(input instanceof Request)
+          ? String(input).replace(/\/systemone$/, preset.evaluationPath)
+          : input;
+      const response = await (options.fetch ?? fetch)(target, init);
       if (response.status === 429) {
         const raw = response.headers.get("retry-after");
         const seconds = raw === null ? NaN : Number(raw);
